@@ -366,10 +366,6 @@ public class OwnerDbStorage implements To2ServerStorage {
                 return out.toByteArray();
               }
 
-              @Override
-              public boolean canSplit() {
-                return false;
-              }
             }));
   }
 

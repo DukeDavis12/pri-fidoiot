@@ -45,10 +45,6 @@ public class ServiceInfoMarshallerTest {
                 return result;
               }
 
-              @Override
-              public boolean canSplit() {
-                return true;
-              }
             });
         entries.add(entry1);
 
@@ -64,10 +60,6 @@ public class ServiceInfoMarshallerTest {
                 return "F5";
               }
 
-              @Override
-              public boolean canSplit() {
-                return false;
-              }
             });
         entries.add(entry2);
         return entries;

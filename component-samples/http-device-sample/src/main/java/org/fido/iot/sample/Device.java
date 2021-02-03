@@ -402,10 +402,6 @@ public class Device {
             new ServiceInfoEntry(info.getAsString(Const.FIRST_KEY),
                 new ServiceInfoSequence(info.getAsString(Const.FIRST_KEY)) {
 
-                  @Override
-                  public boolean canSplit() {
-                    return false;
-                  }
 
                   @Override
                   public Object getContent() {

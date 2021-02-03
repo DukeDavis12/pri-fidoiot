@@ -137,8 +137,7 @@ public class To2StorageTest {
 
   String packageName = "linux64.sh";
   String boolName = "bool";
-  String sviString = "sdo_sys:filedesc=packageName,sdo_sys:write=packageContent" +
-  ",sdo_sys:filedesc=cborBooleanId,sdo_sys:write=cborBooleanValue";
+  String sviString = "sdo_sys:filedesc=packageName,sdo_sys:write=packageContent";
 
   final KeyResolver keyResolver = new KeyResolver() {
     @Override
@@ -171,10 +170,10 @@ public class To2StorageTest {
 
   private void insertSampleServiceInfo(UUID uuid, DataSource ds, OwnerDbManager ownerDbManager) {
 
-    ownerDbManager.addServiceInfo(ds, "packageContent", packageContent.getBytes(), false);
-    ownerDbManager.addServiceInfo(ds, "packageName", packageName.getBytes(), false);
-    ownerDbManager.addServiceInfo(ds, "cborBooleanValue", Composite.decodeHex("F5"), true);
-    ownerDbManager.addServiceInfo(ds, "cborBooleanId", boolName.getBytes(), true);
+    ownerDbManager.addServiceInfo(ds, "packageContent", packageContent.getBytes());
+    ownerDbManager.addServiceInfo(ds, "packageName", packageName.getBytes());
+//    ownerDbManager.addServiceInfo(ds, "cborBooleanValue", "true".getBytes());
+//    ownerDbManager.addServiceInfo(ds, "cborBooleanId", boolName.getBytes());
 
     ownerDbManager.removeSviFromDevice(ds, uuid);
     ownerDbManager.assignSviToDevice(ds, uuid, sviString);
@@ -280,6 +279,7 @@ public class To2StorageTest {
         Iterable<Supplier<ServiceInfo>> serviceInfos = marshaller.marshal();
         for (final Iterator<Supplier<ServiceInfo>> it = serviceInfos.iterator(); it.hasNext();) {
           ServiceInfo serviceInfo = it.next().get();
+//          if(serviceInfo.size() ==0 ) { break;}
             // Convert to CBOR now
             Iterator<ServiceInfoEntry> marshalledEntries = serviceInfo.iterator();
             while (marshalledEntries.hasNext()) {
