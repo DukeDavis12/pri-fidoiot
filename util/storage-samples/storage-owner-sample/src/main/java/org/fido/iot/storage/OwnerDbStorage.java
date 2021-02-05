@@ -387,26 +387,22 @@ public class OwnerDbStorage implements To2ServerStorage {
 
   @Override
   public Composite getNextServiceInfo() {
-    if (serviceInfoCount == 0 || serviceInfoPosition == serviceInfoCount) {
-      return ServiceInfoEncoder.encodeOwnerServiceInfo(Collections.EMPTY_LIST, false, true);
-    } else {
-      serviceInfoMarshaller.register(new OwnerServiceInfoModule(dataSource));
-      Iterable<Supplier<ServiceInfo>> serviceInfos = serviceInfoMarshaller.marshal();
-      List<Composite> svi = new LinkedList<Composite>();
-      final Iterator<Supplier<ServiceInfo>> it = serviceInfos.iterator();
-      if (it.hasNext()) {
-        ServiceInfo serviceInfo = it.next().get();
-        Iterator<ServiceInfoEntry> marshalledEntries = serviceInfo.iterator();
-        while (marshalledEntries.hasNext()) {
-          ServiceInfoEntry marshalledEntry = marshalledEntries.next();
-          Composite innerArray = ServiceInfoEncoder.encodeValue(marshalledEntry.getKey(),
+    serviceInfoMarshaller.register(new OwnerServiceInfoModule(dataSource));
+    Iterable<Supplier<ServiceInfo>> serviceInfos = serviceInfoMarshaller.marshal();
+    List<Composite> svi = new LinkedList<Composite>();
+    final Iterator<Supplier<ServiceInfo>> it = serviceInfos.iterator();
+    if (it.hasNext()) {
+      ServiceInfo serviceInfo = it.next().get();
+      Iterator<ServiceInfoEntry> marshalledEntries = serviceInfo.iterator();
+      while (marshalledEntries.hasNext()) {
+        ServiceInfoEntry marshalledEntry = marshalledEntries.next();
+        Composite innerArray = ServiceInfoEncoder.encodeValue(marshalledEntry.getKey(),
                 marshalledEntry.getValue().getContent());
-          svi.add(innerArray);
-        }
-        ++serviceInfoPosition;
+        svi.add(innerArray);
       }
-      return ServiceInfoEncoder.encodeOwnerServiceInfo(svi, true, false);
+      return ServiceInfoEncoder.encodeOwnerServiceInfo(Collections.EMPTY_LIST, false, true);
     }
+    return ServiceInfoEncoder.encodeOwnerServiceInfo(svi, true, false);
   }
 
   @Override
@@ -492,16 +488,6 @@ public class OwnerDbStorage implements To2ServerStorage {
     serviceInfoMarshaller = new ServiceInfoMarshaller(getMaxOwnerServiceInfoMtuSz(),
         voucher.getAsComposite(Const.OV_HEADER).getAsUuid(Const.OVH_GUID));
     serviceInfoMarshaller.register(new OwnerServiceInfoModule(dataSource));
-    Iterable<Supplier<ServiceInfo>> serviceInfo = serviceInfoMarshaller.marshal();
-    int mtuPacketCount = 0;
-    for (final Iterator<Supplier<ServiceInfo>> it = serviceInfo.iterator(); it.hasNext();) {
-      it.next().get();
-      ++mtuPacketCount;
-    }
-    serviceInfoCount = mtuPacketCount;
-    serviceInfoPosition = 0;
-    // Reset the positions because we need to start from the beginning to send service info.
-    serviceInfoMarshaller.reset();
   }
 
   @Override
